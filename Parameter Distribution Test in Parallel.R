@@ -1,4 +1,3 @@
-
 parameter_distribution_test = function(muestra3,precision) {
   
   library("goftest")
@@ -138,7 +137,7 @@ parameter_distribution_test = function(muestra3,precision) {
           -sum(dweibull(muestra99, param[1], param[2], log=TRUE)) 
         }
         
-        ML <- optim(c(mean(muestra99),sd(muestra99)),LL,method="L-BFGS-B")$par
+        ML <- optim(c(mean(muestra99),mean(muestra99)),LL,method="L-BFGS-B")$par
         
         
         df_weibull = rbind(df_weibull, c(ML[1], ML[2]))
@@ -166,11 +165,14 @@ parameter_distribution_test = function(muestra3,precision) {
     
     colnames(df_weibull) = c("Param_1", "Param_2","KS","Distribution")
     
+    
   }, silent = TRUE)
+    
     
     df_todos3 = rbind(df_todos, c(df_weibull[which(df_weibull$KS == min(df_weibull$KS)),]))
     
     return(df_todos3)
+    
     
   })
   ##### T - student--------------------------------------
@@ -221,14 +223,16 @@ parameter_distribution_test = function(muestra3,precision) {
     KS = df_student[which(df_student$KS == min(df_student$KS)),][,2]
     Distribution = "T-student"
     
-    df_student = data.frame(Param_1,Param_2,KS, Distribution)
-
-    
-  }, silent = TRUE)
+    # df_student = data.frame(Param_1,Param_2,KS, Distribution)
     
     df_todos4 = data.frame(Param_1,Param_2,KS,Distribution)
     
     return(df_todos4)
+
+    
+  }, silent = TRUE)
+    
+
     
   })
   
@@ -410,52 +414,86 @@ parameter_distribution_test = function(muestra3,precision) {
   
 }
 
+muestra = 
 
-parameter_distribution_test(muestra3, 0.01)
-
-
-try({
-  
-  df_total999 = data.frame()
-  
-  try({
-    df_total999 = rbind(df_total999,df_todos1) #Normal
-  }, silent = TRUE)
-  
-  try({
-    df_total999 = rbind(df_total999,df_todos2) #Gamma
-  }, silent = TRUE)
-  
-  try({
-    df_total999 = rbind(df_total999,df_todos3) #Weibull
-  }, silent = TRUE)
-  
-  try({
-    df_total999 = rbind(df_total999,df_todos4) #T-student
-  }, silent = TRUE)
-  
-  try({
-    df_total999 = rbind(df_total999,df_todos5) #Log-Norm
-  }, silent = TRUE)
-  
-  try({
-    df_total999 = rbind(df_total999,df_todos6) #Cauchy
-  }, silent = TRUE)
-  
-  try({
-    df_total999 = rbind(df_total999,df_todos7) #Logistic
-  }, silent = TRUE)
-  
-   parameter_distribution_test_result = df_total999
-   
-   parameter_distribution_test_result$Param_1 = round(as.numeric(parameter_distribution_test_result$Param_1),4)
-   parameter_distribution_test_result$Param_2 = round(as.numeric(parameter_distribution_test_result$Param_2),4)
-   parameter_distribution_test_result$KS = round(as.numeric(parameter_distribution_test_result$KS),4)
-   
-   parameter_distribution_test_result = parameter_distribution_test_result[order(parameter_distribution_test_result$KS),]
-   
-}, silent = TRUE) #Create the desiare table
+parameter_distribution_test(muestra, 0.1)
 
 
-parameter_distribution_test_result
+parameter_distribution_test_result = function() {
+  
+  try({
+    
+    df_total999 = data.frame()
+    
+    try({
+      df_total999 = rbind(df_total999,df_todos1) #Normal
+    }, silent = TRUE)
+    
+    try({
+      df_total999 = rbind(df_total999,df_todos2) #Gamma
+    }, silent = TRUE)
+    
+    try({
+      df_total999 = rbind(df_total999,df_todos3) #Weibull
+    }, silent = TRUE)
+    
+    try({
+      df_total999 = rbind(df_total999,df_todos4) #T-student
+    }, silent = TRUE)
+    
+    try({
+      df_total999 = rbind(df_total999,df_todos5) #Log-Norm
+    }, silent = TRUE)
+    
+    try({
+      df_total999 = rbind(df_total999,df_todos6) #Cauchy
+    }, silent = TRUE)
+    
+    try({
+      df_total999 = rbind(df_total999,df_todos7) #Logistic
+    }, silent = TRUE)
+    
+    parameter_distribution_test_result = df_total999
+    
+    parameter_distribution_test_result$Param_1 = round(as.numeric(parameter_distribution_test_result$Param_1),4)
+    parameter_distribution_test_result$Param_2 = round(as.numeric(parameter_distribution_test_result$Param_2),4)
+    parameter_distribution_test_result$KS = round(as.numeric(parameter_distribution_test_result$KS),4)
+    
+    parameter_distribution_test_result = parameter_distribution_test_result[order(parameter_distribution_test_result$KS),]
+    parameter_distribution_test_table <<- parameter_distribution_test_result
+
+    
+  }, silent = TRUE) #Create the desiare table
+  
+  
+
+  return(parameter_distribution_test_result)
+  
+} #Create the desire table
+
+parameter_distribution_test_result()
+
+
+#################################### CLEANNING THE INVIRONMENT - Execute it 2x times
+# -------- -------- Start on the line after
+
+objects_to_keep <- c("df_cauchy", "df_gamma","df_logis","df_norm","df_lognorm","df_weibull","df_student","parameter_distribution_test_table","muestra", "parameter_distribution_test","parameter_distribution_test_result")
+all_objects <- ls()
+objects_to_remove <- setdiff(all_objects, objects_to_keep)
+rm(list = objects_to_remove)
+
+# -------- Finish on the line before
+###################################
+
+
+parameter_distribution_test_table
+
+# plot(df_weibull$Param_2,df_weibull$KS)
+
+
+
+
+  
+
+
 
